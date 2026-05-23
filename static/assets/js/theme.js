@@ -9,13 +9,3 @@ if (localStorage.getItem("theme") == "dark") {
         localStorage.setItem("theme", "light")
     }
 }
-document.getElementById("sidebar-theme").addEventListener("click", () => {
-    if (localStorage.getItem("theme") == "dark") {
-        document.documentElement.dataset.theme = "light";
-        localStorage.setItem("theme", "light")
-    }
-    else {
-        document.documentElement.dataset.theme = "dark";
-        localStorage.setItem("theme", "dark")
-    }
-})

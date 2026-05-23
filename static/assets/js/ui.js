@@ -27,6 +27,21 @@ sidebarTabAI.addEventListener("click", () => {
 sidebarTabMain.classList.add("selected")
 gridMain.classList.add("selected");
 
+document.getElementById("sidebar-theme").addEventListener("click", () => {
+    if (localStorage.getItem("theme") == "dark") {
+        document.documentElement.dataset.theme = "light";
+        localStorage.setItem("theme", "light")
+    }
+    else {
+        document.documentElement.dataset.theme = "dark";
+        localStorage.setItem("theme", "dark")
+    }
+})
+
+document.getElementById("sidebar-logout").addEventListener("click", () => {
+    window.location.href = "/logout";
+});
+
 //--------------------------------------------------------------------------------------------//
 
 const velocityChart = document.getElementById("block-velocity").querySelector(".chart");
@@ -34,6 +49,7 @@ const velocityChart = document.getElementById("block-velocity").querySelector(".
 const textReBugRateLeft = document.getElementById("rebugrate-number-left");
 const textReBugRateMiddle = document.getElementById("rebugrate-number-middle");
 const textReBugRateRight = document.getElementById("rebugrate-number-right");
+const reBugRateBar = document.getElementById("rebugrate-bar");
 const taskrateChart = document.getElementById("chart-circle");
 const taskRateNumber = document.getElementById("chart-number");
 const releaseRateNumber = document.getElementById("releaserate-number");
@@ -58,6 +74,7 @@ function tasksTotal() {
     textReBugRateLeft.textContent = `${parseInt(returnedBugs / bugs * 100)}%`;
     textReBugRateMiddle.textContent = `${returnedBugs} из ${bugs}`;
     textReBugRateRight.textContent = `${100 - parseInt(returnedBugs / bugs * 100)}%`;
+    reBugRateBar.style.setProperty("--rebugrate", parseInt(returnedBugs / bugs * 100));
 
     var tasks_completed_percentage = parseInt(tasksCompleted / tasksTotal * 100);
     taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
@@ -75,6 +92,7 @@ function taskSelected(sprintIndex) {
     textReBugRateLeft.textContent = `${parseInt(sprint.returned_bugs / sprint.bugs * 100)}%`;
     textReBugRateMiddle.textContent = `${sprint.returned_bugs} из ${sprint.bugs}`;
     textReBugRateRight.textContent = `${100 - parseInt(sprint.returned_bugs / sprint.bugs * 100)}%`;
+    reBugRateBar.style.setProperty("--rebugrate", parseInt(sprint.returned_bugs / sprint.bugs * 100));
 
     var tasks_completed_percentage = parseInt(sprint.tasks_completed / sprint.tasks_total * 100);
     taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
@@ -252,7 +270,6 @@ var ai_models = [];
 async function getData() {
     const serverResponse = await fetch('/dashboard-data');
     const serverData = await serverResponse.json(); 
-    console.log(serverResponse, serverData);
     
     username = serverData.username;
     sprints = serverData.sprints;

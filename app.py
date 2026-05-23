@@ -34,8 +34,6 @@ def login():
     password = data["password"]
 
     user = User.query.filter_by(login=login).first()
-    print(repr(user.password_hash))
-    print(repr(password))
 
     if (user):
         if (check_password_hash(user.password_hash, password)):
@@ -50,7 +48,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return jsonify({"success": True}), 200
+    return redirect(url_for("auth_page"))
 
 @app.route("/dashboard-data", methods=["GET"])
 @login_required
@@ -71,7 +69,7 @@ def dashboard_data():
         return jsonify({"error": "Спринт не найден"}), 404
 
     all_sprints_history = []
-    for s in user_sprints:
+    for s in user_sprints[-8:]:
         all_sprints_history.append({
             "date": s.date.strftime('%d.%m'),
             "tasks_total": s.tasks_total,
@@ -101,7 +99,7 @@ def dashboard_data():
             usage_by_date[date_str]["models_raw"][usage.model_id]["cost"] += round(calculated_cost, 2)
 
     ai_usage_days_response = []
-    for d_val in usage_by_date.values():
+    for d_val in list(usage_by_date.values())[-8:]:
         ai_usage_days_response.append({
             "date": d_val["date"],
             "per_person": d_val["per_person"],
@@ -118,7 +116,6 @@ def dashboard_data():
         {"name": "Claude Opus 4.7"}
     ]
 
-    print(123)
     return jsonify({
         "username": current_user.username,
         "sprints": all_sprints_history,
@@ -131,4 +128,4 @@ if (__name__ == '__main__'):
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0")
