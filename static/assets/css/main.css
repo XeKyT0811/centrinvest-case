@@ -1,0 +1,63 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('/static/assets/fonts/Inter-Regular.otf');
+    font-weight: normal;
+}
+@font-face {
+    font-family: 'Inter';
+    src: url('/static/assets/fonts/Inter-Bold.otf');
+    font-weight: bold;
+}
+
+:root {
+    --bg-top: #F5F5F5;
+    --bg-bottom: #D3FBDE;
+    --main: #FAFFFC;
+    --additional-000: #D8E6DF;
+    --additional-100: #E8F5EF;
+    --additional-200: #D3FFE9;
+    --text-light: #2B6651;
+    --text-dark: #15382C;
+    --accent-000: #00EF64;
+    --accent-100: #00D559;
+    --accent-200: #00B94D;
+    --red-000: #FF6C6C;
+    --extra-0: #FF773D;
+    --extra-1: #505EFF;
+    --extra-2: #39F3CD;
+}
+
+[data-theme="dark"] {
+    --bg-top: #111111;
+    --bg-bottom: #1C2C20;
+    --main: #313232;
+    --additional-000: #3D4541;
+    --additional-100: #4E5752;
+    --additional-200: #606D67;
+    --text-light: #439E7E;
+    --text-dark: #93E0C5;
+    --accent-000: #00FF6A;
+    --accent-100: #00D559;
+    --accent-200: #00B74C;
+    --red-000: #FF6C6C;
+    --extra-0: #2FD7B5;
+    --extra-2: #F3692F;
+    --extra-1: #414FE8;
+}
+
+* {
+    font-family: 'Inter';
+    font-weight: bold;
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(var(--bg-top), var(--bg-bottom));
+}

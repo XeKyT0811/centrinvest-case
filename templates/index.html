@@ -3,9 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Главная</title>
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/index-layout.css">
+    <link rel="stylesheet" href="/static/assets/css/index-elements.css">
+    <script src="/static/assets/js/theme.js" defer></script>
+    <script src="/static/assets/js/data.js" defer></script>
+    <script src="/static/assets/js/ui.js" defer></script>
 </head>
 <body>
-    TEST
+    <div id="grid-main">
+        <div id="block-header">
+            <div style="color: var(--text-dark)">Здравствуйте, </div>
+            <div id="username" style="color: var(--text-light)">Username</div>
+        </div>
+        <div id="block-sidebar">
+            <div id="sidebar-tabs">
+                <div class="sidebar-icon" id="sidebar-tab-main"></div>
+                <div class="sidebar-icon" id="sidebar-tab-ai"></div>
+            </div>
+            <div id="sidebar-extra">
+                <div class="sidebar-icon" id="sidebar-theme"></div>
+                <div class="sidebar-icon" id="sidebar-logout"></div>
+            </div>
+        </div>
+        <div id="grid-tasks">
+            <div class="grid-block" id="block-velocity">
+                <div class="block-title center">Выполненные задачи за спринт</div>
+                <div class="chart"></div>
+            </div> 
+            <div class="grid-block" id="block-rebugrate">
+                <div class="block-title">Процент вернувшихся багов</div>
+                <div id="rebugrate-numbers">
+                <div id="rebugrate-number-left"></div>
+                <div id="rebugrate-number-middle"></div>
+                <div id="rebugrate-number-right"></div>
+            </div>
+            <div id="rebugrate-bar">
+                <div id="rebugrate-bar-left"></div>
+                <div id="rebugrate-bar-right"></div>
+            </div>
+            </div>
+            <div class="grid-block" id="block-releaserate">
+                <div class="block-bg"></div>
+                <div class="block-title">Частота релизов</div>
+                <div class="block-number" id="releaserate-number">12</div>
+                <div class="block-subtitle">в среднем за спринт</div>
+            </div>
+            <div class="grid-block" id="block-bugrate">
+                <div class="block-bg"></div>
+                <div class="block-title">Частота багов</div>
+                <div class="block-number" id="bugrate-number">42</div>
+                <div class="block-subtitle">в среднем за спринт</div>
+            </div>
+            <div class="grid-block" id="block-taskrate">
+                <div class="block-title center">Процент закрытых задач</div>
+                <div id="taskrate-chart">
+                    <div id="chart-bg"></div>
+                    <div id="chart-circle"></div>
+                    <div id="chart-number"></div>
+                </div>
+            </div>
+        </div>
+        <div id="grid-ai">
+            <div class="grid-block" id="block-tokens">
+                <div class="block-title center">Потребление токенов за день</div>
+                <div class="chart"></div>
+            </div>
+            <div class="grid-block" id="block-cost-per-sprint">
+                <div class="block-title">Стоимость ИИ за спринт</div>
+                <div class="block-number" id="cost-per-sprint-number"></div>
+                <div class="block-subtitle"></div>
+            </div>
+            <div class="grid-block" id="block-cost-per-task">
+                <div class="block-title">Стоимость ИИ за задачу</div>
+                <div class="block-number" id="cost-per-task-number">$</div>
+                <div class="block-subtitle"></div>
+            </div>
+            <div class="grid-block" id="block-tokens-per-model">
+                <div class="block-title">Распределение по моделям</div>
+                <div id="tokens-per-model-chart">
+                    <div id="chart-pie"></div>
+                    <div id="chart-stats">
+                        <div id="chart-toggler">
+                            <div id="chart-toggler-bg"></div>
+                            <div id="chart-toggler-tokens" class="selected">Токены</div>
+                            <div id="chart-toggler-cost">Стоимость</div>
+                        </div>
+                        <div id="chart-models">
+                            <div class="chart-model">
+                                <div class="model-percentage"></div>
+                                <div class="model-name"></div>
+                                <div class="model-number"></div>
+                            </div>
+                            <div class="chart-model">
+                                <div class="model-percentage"></div>
+                                <div class="model-name"></div>
+                                <div class="model-number"></div>
+                            </div>
+                            <div class="chart-model">
+                                <div class="model-percentage"></div>
+                                <div class="model-name"></div>
+                                <div class="model-number"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
