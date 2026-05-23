@@ -476,4 +476,10 @@
             width: 100%;
         }
     }
+    #chart-toggler {
+        height: 50px;
+    }
+    .block-title {
+        margin-bottom: 10px;
+    }
 }
