@@ -11,7 +11,7 @@ load_dotenv()
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = (f"mysql+pymysql://{os.getenv("MYSQL_USER")}:{quote_plus(os.getenv("MYSQL_PASSWORD"))}@{os.getenv("MYSQL_HOST")}/{os.getenv("MYSQL_DB")}")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -50,7 +50,7 @@ def logout():
     logout_user()
     return jsonify({"success": True}), 200
 
-@app.route("/dashboard", methods=["GET"])
+@app.route("/dashboard-data", methods=["GET"])
 @login_required
 def dashboard_data():
     return
