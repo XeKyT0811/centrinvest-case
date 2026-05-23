@@ -3,6 +3,7 @@
     align-items: center;
     font-size: 32px;
     gap: 10px;
+    padding-left: 25px;
 }
 
 #block-sidebar {
@@ -24,7 +25,7 @@
     gap: 10px;
 }
 #sidebar-tabs {
-    height: 150px;
+    height: 100px;
 }
 .sidebar-icon {
     width: 50px;
@@ -39,11 +40,17 @@
     &:hover {
         background-image: url('/static/assets/images/calendar-dark.svg');
     }
+    &.selected {
+        background-image: url('/static/assets/images/calendar-selected.svg');
+    }
 }
 #sidebar-tab-ai {
     background-image: url('/static/assets/images/ai-light.svg');
     &:hover {
         background-image: url('/static/assets/images/ai-dark.svg');
+    }
+    &.selected {
+        background-image: url('/static/assets/images/ai-selected.svg');
     }
 }
 #sidebar-tab-team {
@@ -69,11 +76,17 @@
         &:hover {
             background-image: url('/static/assets/images/calendar-light.svg');
         }
+        &.selected {
+            background-image: url('/static/assets/images/calendar-selected.svg');
+        }
     }
     #sidebar-tab-ai {
         background-image: url('/static/assets/images/ai-dark.svg');
         &:hover {
             background-image: url('/static/assets/images/ai-light.svg');
+        }
+        &.selected {
+            background-image: url('/static/assets/images/ai-selected.svg');
         }
     }
     #sidebar-tab-team {
@@ -224,6 +237,8 @@
     height: calc(100% - 30px);
     display: flex;
     gap: 15px;
+    justify-content: end;
+    flex-wrap: wrap;
 }
 .chart-block {
     width: 100px;
@@ -237,12 +252,24 @@
     background-color: var(--additional-000);
     border-radius: 10px;
     height: calc(var(--tasks, 0) * 1% - 30px);
-    min-height: 20px;
+    min-height: min-content;
     display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px 0;
     align-items: center;
     justify-content: center;
     color: var(--text-light);
     font-size: 20px;
+    .number-small {
+        font-size: 10px;
+        &.green {
+            color: var(--accent-200);
+        }
+        &.red {
+            color: var(--red-000);
+        }
+    }
 }
 .chart-block-date {
     height: 30px;
@@ -263,6 +290,9 @@
     .chart-block-line {
         background-color: var(--accent-000);
         color: var(--main);
+        .number-small {
+            color: var(--main);
+        }
     }
     .chart-block-date {
         color: var(--accent-000);
@@ -308,15 +338,96 @@
     height: 300px;
     width: 300px;
     background: conic-gradient(
-        var(--extra-2) calc(var(--chart-0, 42) * 1%), 
+        var(--extra-0) calc(var(--chart-0, 42) * 1%), 
         var(--extra-1) calc(var(--chart-0, 42) * 1%),
         var(--extra-1) calc((var(--chart-0, 42) + var(--chart-1, 29)) * 1%),
-        var(--extra-0) calc((var(--chart-0, 42) + var(--chart-1, 29)) * 1%));
+        var(--extra-2) calc((var(--chart-0, 42) + var(--chart-1, 29)) * 1%));
     border-radius: 50%;
     mask-image: radial-gradient(transparent 89px, black 90px);
 }
-#chart-legend {
+#chart-stats {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
+}
+#chart-toggler {
+    position: relative;
+    background-color: var(--additional-000);
+    height: 35px;
+    width: 220px;
+    display: flex;
+    border-radius: 10px;
+    cursor: pointer;
+    &:hover {
+        background-color: var(--additional-100);
+    }
+}
+#chart-toggler-tokens, #chart-toggler-cost {
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-light);
+    &.selected {
+        color: var(--main);
+    }
+}
+#chart-toggler-bg {
+    background-color: var(--accent-000);
+    height: 100%;
+    width: 50%;
+    border-radius: 10px;
+    position: absolute;
+    top: 0;
+    right: 50%;
+    transition: all ease-in-out 0.1s;
+    &.right {
+        right: 0;
+    }
+}
+#chart-models {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.chart-model {
+    display: flex;
+    gap: 5px;
+    height: 30px;
+    > div {
+        font-size: 14px;
+    }
+}
+.model-percentage {
+    width: 45px;
+    color: var(--main);
+    border-radius: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.color-0 {
+        background-color: var(--extra-0);
+    }
+    &.color-1 {
+        background-color: var(--extra-1);
+    }
+    &.color-2 {
+        background-color: var(--extra-2);
+    }
+}
+.model-name {
+    width: calc(100% - 100px);
+    display: flex;
+    align-items: center;
+    color: var(--text-light);
+}
+.model-number {
+    width: 45px;
+    display: flex;
+    align-items: center;
+    color: var(--text-dark);
+    justify-content: end;
 }
