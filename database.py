@@ -27,6 +27,8 @@ class Sprint(db.Model):
     bugs = db.Column(db.Integer, nullable=False)
     returned_bugs = db.Column(db.Integer, nullable=False)
     releases = db.Column(db.Integer, nullable=False)
+    ai_cost_total = db.Column(db.Integer, nullable=False)
+    ai_cost_per_task = db.Column(db.Integer, nullable=False)
 
     ai_usage_days = db.relationship('AI_usage', backref='sprint', lazy=True)
 
@@ -46,6 +48,8 @@ class AI_usage(db.Model):
     sprint_id = db.Column(db.Integer, db.ForeignKey("sprints.id"), nullable=False)
     date = db.Column(db.Date, nullable=False)
     model_id = db.Column(db.Integer, db.ForeignKey("ai_models.id"), nullable=False)
+    tokens = db.Column(db.Integer, nullable=False)
+    per_person = db.Column(db.Float, nullable=False)
 
 
 @login_manager.user_loader

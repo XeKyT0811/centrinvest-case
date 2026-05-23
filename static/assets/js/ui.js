@@ -6,8 +6,6 @@ function formatNumber(num) {
 
 //--------------------------------------------------------------------------------------------//
 
-document.getElementById("username").textContent = username;
-
 const sidebarTabMain = document.getElementById("sidebar-tab-main");
 const sidebarTabAI = document.getElementById("sidebar-tab-ai");
 const gridMain = document.getElementById("grid-tasks");
@@ -41,8 +39,8 @@ const taskRateNumber = document.getElementById("chart-number");
 const releaseRateNumber = document.getElementById("releaserate-number");
 const bugRateNumber = document.getElementById("bugrate-number");
 
-const maxTasks = Math.max(...[...sprints].reverse().slice(0,7).map(s => s.tasks_completed));
-const chartSprints = [...sprints].reverse();
+var maxTasks = 0;
+var chartSprints = [];
 
 function tasksTotal() {
     var bugs = 0;
@@ -88,34 +86,6 @@ function taskSelected(sprintIndex) {
     document.getElementById("block-bugrate").querySelector(".block-subtitle").textContent = "в этом спринте";
 }
 
-chartSprints.slice(0,7).forEach((sprint, index) => {
-    var chartBlock = document.createElement("div");
-    chartBlock.classList.add("chart-block");
-    chartBlock.style.setProperty("--tasks", parseInt(sprint.tasks_completed / maxTasks * 100));
-    var chartBlockLine = document.createElement("div");
-    chartBlockLine.classList.add("chart-block-line");
-    chartBlockLine.textContent = sprint.tasks_completed;
-    var chartBlockDate = document.createElement("div");
-    chartBlockDate.classList.add("chart-block-date");
-    chartBlockDate.textContent = sprint.date;
-    chartBlock.appendChild(chartBlockLine);
-    chartBlock.appendChild(chartBlockDate);
-    velocityChart.insertBefore(chartBlock,velocityChart.firstChild);
-    chartBlock.addEventListener("click", (e) => {
-        if (e.currentTarget.classList.contains("selected")) {
-            e.currentTarget.classList.remove("selected");
-            tasksTotal();
-        }
-        else {
-            velocityChart.querySelectorAll(".chart-block").forEach((b) => b.classList.remove("selected"));
-            e.currentTarget.classList.add("selected");
-            taskSelected(index);
-        }
-    })
-})
-
-tasksTotal();
-
 //--------------------------------------------------------------------------------------------//
 
 const tokensChart = document.getElementById("block-tokens").querySelector(".chart");
@@ -126,20 +96,10 @@ const AICostPerTaskNumber = document.getElementById("cost-per-task-number");
 const AICostPerTaskNumberSmall = document.getElementById("block-cost-per-task").querySelector(".block-subtitle");
 const AIChartModels = document.getElementById("chart-models");
 
-const maxTokens = Math.max(...[...ai_usage_days].reverse().slice(0,7).map(s => s.usage.reduce((a, b) => a + b.tokens, 0)));
-const chartDays = [...ai_usage_days].reverse();
+var maxTokens = 0;
+var chartDays = []; 
 
 var ai_total_stats = [];
-ai_models.forEach((model,index) => {
-        ai_total_stats.push({model: index, tokens: 0, cost: 0});
-    });
-chartDays.forEach((day) => {
-    ai_models.forEach((model, index) => {
-        ai_total_stats[index].tokens += day.usage[index].tokens;
-        ai_total_stats[index].cost += day.usage[index].cost;
-    });
-});
-
 var AIStatsMode = "total";
 var AIChartMode = "tokens";
 
@@ -284,54 +244,116 @@ document.getElementById("chart-toggler-cost").addEventListener("click", (e) => {
     }
 })
 
-chartDays.slice(0,7).forEach((day, index) => {
-    var tokenUsage = day.usage.reduce((a,b) => a + b.tokens, 0);
-    var tokenUsageLastDay = chartDays[index + 1] ? chartDays[index + 1].usage.reduce((a,b) => a + b.tokens, 0) : 0;
-    var chartBlock = document.createElement("div");
-    chartBlock.classList.add("chart-block");
-    chartBlock.style.setProperty("--tasks", parseInt(tokenUsage / maxTokens * 100));
-    var chartBlockLine = document.createElement("div");
-    chartBlockLine.classList.add("chart-block-line");
-    var numberLarge = document.createElement("div");
-    numberLarge.classList.add("number-large");
-    numberLarge.textContent = formatNumber(tokenUsage);
-    var numberSmall = document.createElement("div");
-    numberSmall.classList.add("number-small");
-    if (chartDays[index + 1]) {
-        if (tokenUsage - tokenUsageLastDay > 0) {
-            numberSmall.classList.add("red");
-            numberSmall.textContent = `+${((tokenUsage - tokenUsageLastDay) / tokenUsageLastDay * 100).toFixed(2)}%`;
-        }
-        else if (tokenUsage - tokenUsageLastDay == 0) {
-            numberSmall.classList.add("green");
-            numberSmall.textContent = `+0.00%`;
-        }
-        else {
-            numberSmall.classList.add("green");
-            numberSmall.textContent = `${((tokenUsage - tokenUsageLastDay) / tokenUsageLastDay * 100).toFixed(2)}%`;
-        };
-    }
-    chartBlockLine.appendChild(numberLarge);
-    chartBlockLine.appendChild(numberSmall);
-    var chartBlockDate = document.createElement("div");
-    chartBlockDate.classList.add("chart-block-date");
-    chartBlockDate.textContent = day.date;
-    chartBlock.appendChild(chartBlockLine);
-    chartBlock.appendChild(chartBlockDate);
-    tokensChart.insertBefore(chartBlock,tokensChart.firstChild);
-    chartBlock.addEventListener("click", (e) => {
-        if (e.currentTarget.classList.contains("selected")) {
-            e.currentTarget.classList.remove("selected");
-            AIStatsMode = "total";
-            AITotal();
-        }
-        else {
-            tokensChart.querySelectorAll(".chart-block").forEach((b) => b.classList.remove("selected"));
-            e.currentTarget.classList.add("selected");
-            AIStatsMode = index;
-            AISelected();
-        }
-    })
-})
+var username = "";
+var sprints = [];
+var ai_usage_days = [];
+var ai_models = [];
 
-AITotal();
+async function getData() {
+    const serverResponse = await fetch('/dashboard-data');
+    const serverData = await serverResponse.json(); 
+    console.log(serverResponse, serverData);
+    
+    username = serverData.username;
+    sprints = serverData.sprints;
+    ai_usage_days = serverData.ai_usage_days;
+    ai_models = serverData.ai_models;
+
+    maxTasks = Math.max(...[...sprints].reverse().slice(0,7).map(s => s.tasks_completed));
+    chartSprints = [...sprints].reverse();
+    maxTokens = Math.max(...[...ai_usage_days].reverse().slice(0,7).map(s => s.usage.reduce((a, b) => a + b.tokens, 0)));
+    chartDays = [...ai_usage_days].reverse(); 
+
+    ai_models.forEach((model,index) => {
+        ai_total_stats.push({model: index, tokens: 0, cost: 0});
+    });
+    chartDays.forEach((day) => {
+        ai_models.forEach((model, index) => {
+            ai_total_stats[index].tokens += day.usage[index].tokens;
+            ai_total_stats[index].cost += day.usage[index].cost;
+        });
+    });
+
+    chartSprints.slice(0,7).forEach((sprint, index) => {
+        var chartBlock = document.createElement("div");
+        chartBlock.classList.add("chart-block");
+        chartBlock.style.setProperty("--tasks", parseInt(sprint.tasks_completed / maxTasks * 100));
+        var chartBlockLine = document.createElement("div");
+        chartBlockLine.classList.add("chart-block-line");
+        chartBlockLine.textContent = sprint.tasks_completed;
+        var chartBlockDate = document.createElement("div");
+        chartBlockDate.classList.add("chart-block-date");
+        chartBlockDate.textContent = sprint.date;
+        chartBlock.appendChild(chartBlockLine);
+        chartBlock.appendChild(chartBlockDate);
+        velocityChart.insertBefore(chartBlock,velocityChart.firstChild);
+        chartBlock.addEventListener("click", (e) => {
+            if (e.currentTarget.classList.contains("selected")) {
+                e.currentTarget.classList.remove("selected");
+                tasksTotal();
+            }
+            else {
+                velocityChart.querySelectorAll(".chart-block").forEach((b) => b.classList.remove("selected"));
+                e.currentTarget.classList.add("selected");
+                taskSelected(index);
+            }
+        })
+    })
+
+    chartDays.slice(0,7).forEach((day, index) => {
+        var tokenUsage = day.usage.reduce((a,b) => a + b.tokens, 0);
+        var tokenUsageLastDay = chartDays[index + 1] ? chartDays[index + 1].usage.reduce((a,b) => a + b.tokens, 0) : 0;
+        var chartBlock = document.createElement("div");
+        chartBlock.classList.add("chart-block");
+        chartBlock.style.setProperty("--tasks", parseInt(tokenUsage / maxTokens * 100));
+        var chartBlockLine = document.createElement("div");
+        chartBlockLine.classList.add("chart-block-line");
+        var numberLarge = document.createElement("div");
+        numberLarge.classList.add("number-large");
+        numberLarge.textContent = formatNumber(tokenUsage);
+        var numberSmall = document.createElement("div");
+        numberSmall.classList.add("number-small");
+        if (chartDays[index + 1]) {
+            if (tokenUsage - tokenUsageLastDay > 0) {
+                numberSmall.classList.add("red");
+                numberSmall.textContent = `+${((tokenUsage - tokenUsageLastDay) / tokenUsageLastDay * 100).toFixed(2)}%`;
+            }
+            else if (tokenUsage - tokenUsageLastDay == 0) {
+                numberSmall.classList.add("green");
+                numberSmall.textContent = `+0.00%`;
+            }
+            else {
+                numberSmall.classList.add("green");
+                numberSmall.textContent = `${((tokenUsage - tokenUsageLastDay) / tokenUsageLastDay * 100).toFixed(2)}%`;
+            };
+        }
+        chartBlockLine.appendChild(numberLarge);
+        chartBlockLine.appendChild(numberSmall);
+        var chartBlockDate = document.createElement("div");
+        chartBlockDate.classList.add("chart-block-date");
+        chartBlockDate.textContent = day.date;
+        chartBlock.appendChild(chartBlockLine);
+        chartBlock.appendChild(chartBlockDate);
+        tokensChart.insertBefore(chartBlock,tokensChart.firstChild);
+        chartBlock.addEventListener("click", (e) => {
+            if (e.currentTarget.classList.contains("selected")) {
+                e.currentTarget.classList.remove("selected");
+                AIStatsMode = "total";
+                AITotal();
+            }
+            else {
+                tokensChart.querySelectorAll(".chart-block").forEach((b) => b.classList.remove("selected"));
+                e.currentTarget.classList.add("selected");
+                AIStatsMode = index;
+                AISelected();
+            }
+        })
+    })
+
+    document.getElementById("username").textContent = username;
+
+    tasksTotal();
+    AITotal();
+}
+
+getData();
