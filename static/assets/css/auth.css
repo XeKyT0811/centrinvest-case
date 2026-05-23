@@ -56,3 +56,19 @@
         background-color: var(--accent-200);
     }
 }
+
+@media (max-width: 600px) {
+    #auth-form {
+        width: 100%;
+    }
+    .form-field {
+        height: 60px;
+    }
+    #auth-error {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .form-button {
+        height: 60px;
+    }
+}

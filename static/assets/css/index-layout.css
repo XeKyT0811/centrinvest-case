@@ -74,3 +74,22 @@
     grid-column: 2;
     grid-row: 2 / 4;
 }
+
+@media (max-width: 1000px) {
+    #grid-main {
+        margin: 40px 0;
+        width: calc(100% - 20px);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    #grid-tasks, #grid-ai {
+        width: 100%;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        &.selected {
+            display: flex;
+        }
+    }
+}
