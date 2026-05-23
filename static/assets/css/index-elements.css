@@ -436,6 +436,7 @@
     #block-header {
         padding: 0;
         margin-bottom: 20px;
+        overflow: hidden;
     }
     #block-sidebar {
         position: fixed;
