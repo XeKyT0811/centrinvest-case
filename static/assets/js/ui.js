@@ -138,7 +138,7 @@ function AIChartDisplayTokens() {
         percentage.classList.add(`color-${chart_models[index].model}`);
         var percentageNumber = parseInt(chart_models[index].tokens / tokens_total * 100);
         percentage.textContent = `${percentageNumber}%`;
-        if (index < 2) document.getElementById("chart-pie").style.setProperty(`--chart-${chart_models[index].model}`, percentageNumber);
+        if (chart_models[index].model < 2) document.getElementById("chart-pie").style.setProperty(`--chart-${chart_models[index].model}`, percentageNumber);
         model.querySelector(".model-name").textContent = ai_models[chart_models[index].model].name;
         var tokens = chart_models[index].tokens;
         model.querySelector(".model-number").textContent = formatNumber(tokens);
@@ -162,7 +162,7 @@ function AIChartDisplayCost() {
         percentage.classList.add(`color-${chart_models[index].model}`);
         var percentageNumber = parseInt(chart_models[index].cost / cost_total * 100);
         percentage.textContent = `${percentageNumber}%`;
-        if (index < 2) document.getElementById("chart-pie").style.setProperty(`--chart-${chart_models[index].model}`, percentageNumber);
+        if (chart_models[index].model < 2) document.getElementById("chart-pie").style.setProperty(`--chart-${chart_models[index].model}`, percentageNumber);
         model.querySelector(".model-name").textContent = ai_models[chart_models[index].model].name;
         var cost = chart_models[index].cost;
         model.querySelector(".model-number").textContent = `${cost}$`;
