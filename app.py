@@ -54,9 +54,17 @@ def logout():
 @login_required
 def dashboard_data():
     user_sprints = current_user.sprints
+
+    models_from_db = AI_model.query.order_by(AI_model.id.asc()).all()
+    ai_models_list = [{"name": m.name} for m in models_from_db]
     
     if not user_sprints:
-        return jsonify({"error": "У этого пользователя нет спринтов"}), 404
+        return jsonify({
+            "username": current_user.username,
+            "sprints": [],
+            "ai_usage_days": [],
+            "ai_models": ai_models_list
+        }), 200
 
     requested_sprint_id = request.args.get('sprint_id', type=int)
     target_sprint = None
@@ -123,9 +131,8 @@ def dashboard_data():
         "ai_models": ai_models_list
     }), 200
 
-
 if (__name__ == '__main__'):
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True,host="0.0.0.0")
+    app.run(debug=True)
