@@ -277,7 +277,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-light);
+    color: var(--text-dark);
 }
 .chart-block:hover .chart-block-line {
     background-color: var(--additional-100);
