@@ -199,6 +199,10 @@ function AITotal() {
         AICostPerTaskNumberSmall.innerHTML = `на ${Math.abs(costPerTaskDiff / prev_sprint.ai_cost_per_task * 100).toFixed(2)}% ниже прошлого спринта<br>(${costPerTaskDiff}$)`;
     }
     else AICostPerTaskNumberSmall.innerHTML = 'без изменений<br>в сравнении с прошлым спринтом';
+    if (ai_usage_days.length == 0) {
+        document.getElementById("tokens-per-model-chart").style.display = "none";
+        return
+    }
     if (AIChartMode == "tokens") AIChartDisplayTokens();
     if (AIChartMode == "cost") AIChartDisplayCost();
 }
