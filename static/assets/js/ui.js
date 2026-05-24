@@ -64,6 +64,14 @@ function tasksTotal() {
     var tasksTotal = 0;
     var tasksCompleted = 0;
     var releases = 0;
+    if (sprints.length == 0) {
+        document.getElementById("taskrate-chart").style.display = "none";
+        document.getElementById("rebugrate-numbers").style.display = "none";
+        document.getElementById("rebugrate-bar").style.display = "none";
+        document.getElementById("block-releaserate").querySelector(".block-subtitle").textContent = "";
+        document.getElementById("block-bugrate").querySelector(".block-subtitle").textContent = "";
+        return;
+    }
     chartSprints.forEach((sprint) => {
         bugs += sprint.bugs;
         returnedBugs += sprint.returned_bugs;
@@ -71,14 +79,28 @@ function tasksTotal() {
         tasksCompleted += sprint.tasks_completed;
         releases += sprint.releases;
     });
-    textReBugRateLeft.textContent = `${parseInt(returnedBugs / bugs * 100)}%`;
+    var rebugratePercentage = parseInt(returnedBugs / bugs * 100);
+    if (!isNaN(rebugratePercentage)) {
+        textReBugRateLeft.textContent = `${rebugratePercentage}%`;
+        textReBugRateRight.textContent = `${100 - rebugratePercentage}%`;
+        reBugRateBar.style.setProperty("--rebugrate", rebugratePercentage);
+    }
+    else {
+        textReBugRateLeft.textContent = ``;
+        textReBugRateRight.textContent = ``;
+        reBugRateBar.style.setProperty("--rebugrate", 0);
+    }
     textReBugRateMiddle.textContent = `${returnedBugs} из ${bugs}`;
-    textReBugRateRight.textContent = `${100 - parseInt(returnedBugs / bugs * 100)}%`;
-    reBugRateBar.style.setProperty("--rebugrate", parseInt(returnedBugs / bugs * 100));
 
     var tasks_completed_percentage = parseInt(tasksCompleted / tasksTotal * 100);
-    taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
-    taskRateNumber.textContent = `${tasks_completed_percentage}%`
+    if (!isNaN(tasks_completed_percentage)) {
+        taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
+        taskRateNumber.textContent = `${tasks_completed_percentage}%`
+    }
+    else {
+        taskrateChart.style.setProperty("--taskrate", 0);
+        taskRateNumber.textContent = `0%`;
+    }
 
     var releases_avg = parseInt(releases / sprints.length);
     var bugs_avg = parseInt(bugs / sprints.length);
@@ -89,14 +111,29 @@ function tasksTotal() {
 }
 function taskSelected(sprintIndex) {
     var sprint = chartSprints[sprintIndex];
-    textReBugRateLeft.textContent = `${parseInt(sprint.returned_bugs / sprint.bugs * 100)}%`;
+
+    var rebugratePercentage = parseInt(sprint.returned_bugs / sprint.bugs * 100);
+    if (!isNaN(rebugratePercentage)) {
+        textReBugRateLeft.textContent = `${rebugratePercentage}%`;
+        textReBugRateRight.textContent = `${100 - rebugratePercentage}%`;
+        reBugRateBar.style.setProperty("--rebugrate", rebugratePercentage);
+    }
+    else {
+        textReBugRateLeft.textContent = ``;
+        textReBugRateRight.textContent = ``;
+        reBugRateBar.style.setProperty("--rebugrate", 0);
+    }
     textReBugRateMiddle.textContent = `${sprint.returned_bugs} из ${sprint.bugs}`;
-    textReBugRateRight.textContent = `${100 - parseInt(sprint.returned_bugs / sprint.bugs * 100)}%`;
-    reBugRateBar.style.setProperty("--rebugrate", parseInt(sprint.returned_bugs / sprint.bugs * 100));
 
     var tasks_completed_percentage = parseInt(sprint.tasks_completed / sprint.tasks_total * 100);
-    taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
-    taskRateNumber.textContent = `${tasks_completed_percentage}%`
+    if (!isNaN(tasks_completed_percentage)) {
+        taskrateChart.style.setProperty("--taskrate",tasks_completed_percentage);
+        taskRateNumber.textContent = `${tasks_completed_percentage}%`
+    }
+    else {
+        taskrateChart.style.setProperty("--taskrate", 0);
+        taskRateNumber.textContent = `0%`;
+    }
 
     releaseRateNumber.textContent = sprint.releases;
     bugRateNumber.textContent = sprint.bugs;
@@ -175,33 +212,34 @@ function AITotal() {
     document.getElementById("block-cost-per-task").querySelector(".block-number").style.height = "";
     const last_sprint = [...sprints].reverse()[0];
     const prev_sprint = [...sprints].reverse()[1];
-    AICostPerSprintNumber.textContent = `${last_sprint.ai_cost_total}$`;
-    AICostPerTaskNumber.textContent = `${last_sprint.ai_cost_per_task}$`;
-    var costPerSprintDiff = last_sprint.ai_cost_total - prev_sprint.ai_cost_total;
-    AICostPerSprintNumberSmall.classList.remove("red", "green");
-    if (costPerSprintDiff > 0) {
-        AICostPerSprintNumberSmall.classList.add("red");
-        AICostPerSprintNumberSmall.innerHTML = `на ${(costPerSprintDiff / prev_sprint.ai_cost_total * 100).toFixed(2)}% выше прошлого спринта<br>(+${costPerSprintDiff}$)`;
+    if (last_sprint && prev_sprint) {
+        AICostPerSprintNumber.textContent = `${last_sprint.ai_cost_total.toFixed(2)}$`;
+        AICostPerTaskNumber.textContent = `${last_sprint.ai_cost_per_task.toFixed(2)}$`;
+        var costPerSprintDiff = last_sprint.ai_cost_total - prev_sprint.ai_cost_total;
+        AICostPerSprintNumberSmall.classList.remove("red", "green");
+        if (costPerSprintDiff > 0) {
+            AICostPerSprintNumberSmall.classList.add("red");
+            AICostPerSprintNumberSmall.innerHTML = `на ${(costPerSprintDiff / prev_sprint.ai_cost_total * 100).toFixed(2)}% выше прошлого спринта<br>(+${costPerSprintDiff}$)`;
+        }
+        else if (costPerSprintDiff < 0) {
+            AICostPerSprintNumberSmall.classList.add("green");
+            AICostPerSprintNumberSmall.innerHTML = `на ${Math.abs(costPerSprintDiff / prev_sprint.ai_cost_total * 100).toFixed(2)}% ниже прошлого спринта<br>(${costPerSprintDiff}$)`;
+        }
+        else AICostPerSprintNumberSmall.innerHTML = 'без изменений<br>в сравнении с прошлым спринтом';
+        var costPerTaskDiff = last_sprint.ai_cost_per_task - prev_sprint.ai_cost_per_task;
+        AICostPerTaskNumberSmall.classList.remove("red", "green");
+        if (costPerTaskDiff > 0) {
+            AICostPerTaskNumberSmall.classList.add("red");
+            AICostPerTaskNumberSmall.innerHTML = `на ${(costPerTaskDiff / prev_sprint.ai_cost_per_task * 100).toFixed(2)}% выше прошлого спринта<br>(+${costPerTaskDiff}$)`;
+        }
+        else if (costPerTaskDiff < 0) {
+            AICostPerTaskNumberSmall.classList.add("green");
+            AICostPerTaskNumberSmall.innerHTML = `на ${Math.abs(costPerTaskDiff / prev_sprint.ai_cost_per_task * 100).toFixed(2)}% ниже прошлого спринта<br>(${costPerTaskDiff}$)`;
+        }
+        else AICostPerTaskNumberSmall.innerHTML = 'без изменений<br>в сравнении с прошлым спринтом';
     }
-    else if (costPerSprintDiff < 0) {
-        AICostPerSprintNumberSmall.classList.add("green");
-        AICostPerSprintNumberSmall.innerHTML = `на ${Math.abs(costPerSprintDiff / prev_sprint.ai_cost_total * 100).toFixed(2)}% ниже прошлого спринта<br>(${costPerSprintDiff}$)`;
-    }
-    else AICostPerSprintNumberSmall.innerHTML = 'без изменений<br>в сравнении с прошлым спринтом';
-    var costPerTaskDiff = last_sprint.ai_cost_per_task - prev_sprint.ai_cost_per_task;
-    AICostPerTaskNumberSmall.classList.remove("red", "green");
-    if (costPerTaskDiff > 0) {
-        AICostPerTaskNumberSmall.classList.add("red");
-        AICostPerTaskNumberSmall.innerHTML = `на ${(costPerTaskDiff / prev_sprint.ai_cost_per_task * 100).toFixed(2)}% выше прошлого спринта<br>(+${costPerTaskDiff}$)`;
-    }
-    else if (costPerTaskDiff < 0) {
-        AICostPerTaskNumberSmall.classList.add("green");
-        AICostPerTaskNumberSmall.innerHTML = `на ${Math.abs(costPerTaskDiff / prev_sprint.ai_cost_per_task * 100).toFixed(2)}% ниже прошлого спринта<br>(${costPerTaskDiff}$)`;
-    }
-    else AICostPerTaskNumberSmall.innerHTML = 'без изменений<br>в сравнении с прошлым спринтом';
     if (ai_usage_days.length == 0) {
         document.getElementById("tokens-per-model-chart").style.display = "none";
-        return
     }
     if (AIChartMode == "tokens") AIChartDisplayTokens();
     if (AIChartMode == "cost") AIChartDisplayCost();
@@ -213,8 +251,8 @@ function AISelected() {
     document.getElementById("block-cost-per-task").querySelector(".block-number").style.height = "83px";
     var cost_total = chartDays[AIStatsMode].usage.reduce((a,b) => a + b.cost, 0);
     var cost_total_prev = chartDays[AIStatsMode + 1] ? chartDays[AIStatsMode + 1].usage.reduce((a,b) => a + b.cost, 0) : 0;
-    AICostPerSprintNumber.textContent = `${cost_total}$`;
-    AICostPerTaskNumber.textContent = `${chartDays[AIStatsMode].per_person}$`;
+    AICostPerSprintNumber.textContent = `${cost_total.toFixed(2)}$`;
+    AICostPerTaskNumber.textContent = `${chartDays[AIStatsMode].per_person.toFixed(2)}$`;
     if (chartDays[AIStatsMode + 1]) {
         var costPerDayDiff = (cost_total - cost_total_prev).toFixed(2);
         AICostPerSprintNumberSmall.classList.remove("red", "green");
